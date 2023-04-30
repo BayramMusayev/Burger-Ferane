@@ -18,7 +18,7 @@ const Customers = () => {
   }
   function PrevBtn({ onClick }) {
     return (
-      <button c className=" absolute text-white -bottom-12 right-1/2 bg-primary flex 
+      <button className=" absolute text-white -bottom-12 right-1/2 bg-primary flex 
       items-center justify-center w-10 h-10 rounded-full" onClick={onClick}>
         <IoIosArrowBack />
       </button>

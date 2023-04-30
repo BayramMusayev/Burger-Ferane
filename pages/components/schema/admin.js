@@ -6,5 +6,5 @@ export const adminSchema = Yup.object({
     .min(3, "Username Password must be at least 3 characters."),
   password: Yup.string()
     .required("Password is required")
-    .min(8, "Password must be at least 8 characters."),
+    .min(4, "Password must be at least 4 characters."),
 });

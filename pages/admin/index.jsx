@@ -1,13 +1,31 @@
+import axios from "axios";
 import Title from "../components/ui/Title";
 import Input from "../components/form/input";
 import { adminSchema } from "../components/schema/admin";
 import { useFormik } from "formik";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import {useRouter} from "next/router";
+
 
 const Login = () => {
+  const { push } = useRouter();
+
   const onSubmit = async (values, actions) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    actions.resetForm();
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin`,
+        values
+      );
+      if (res.status === 200) {
+        console.log(res.data);
+        actions.resetForm();
+        toast.success("Admin Login Success");
+        push("/admin/profile");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   const { values, errors, touched, handleSubmit, handleChange, handleBlur } =
     useFormik({
@@ -41,8 +59,11 @@ const Login = () => {
   ];
   return (
     <div className="container mx-auto">
-      <form className="flex flex-col items-center my-10 md:w-1/2 w-full mx-auto
-      "onSubmit={handleSubmit}>
+      <form
+        className="flex flex-col items-center my-10 md:w-1/2 w-full mx-auto
+      "
+        onSubmit={handleSubmit}
+      >
         <Title addClass="text-[40px] mb-6">Admin Login</Title>
         <div className="flex flex-col gap-y-3 w-full">
           {inputs.map((input) => (
@@ -64,5 +85,20 @@ const Login = () => {
     </div>
   );
 };
+
+export const getServerSideProps = (ctx)=>{
+  const myCookie = ctx.req?.cookies || ""
+  if(myCookie.token === process.env.ADMIN_TOKEN){
+    return {
+      redirect: {
+        destination: "/admin/profile",
+        permanent: false,
+      },
+    }
+  }
+  return {
+    props: {},
+  }
+}
 
 export default Login;

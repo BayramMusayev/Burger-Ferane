@@ -1,5 +1,12 @@
 import Image from "next/image";
 import React from "react";
+import {useRouter} from "next/router";
+import { useState } from "react";
+import Order from "../components/admin/Order";
+import Prodacts from "../components/admin/Prodacts";
+import Category from "../components/admin/Catagory";
+import Footer from "../components/admin/Footer";
+import axios from "axios";
 import {
   MdExitToApp,
   MdDirectionsBike,
@@ -7,14 +14,26 @@ import {
   MdOutlineCategory,
   MdOutlineWindow,
 } from "react-icons/md";
-
-import { useState } from "react";
-import Order from "../components/admin/Order";
-import Prodacts from "../components/admin/Prodacts";
-import Category from "../components/admin/Catagory";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const [tabs, setTabs] = useState(0);
+
+  const {push} = useRouter();
+
+  const closeAdminAccount = async () => {
+    try {
+      if (confirm("Are you sure you want to close your Admin Account?")) {
+  const res = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/admin`);
+  if (res.status === 200) {
+    push("/admin")
+    toast.success("Admin Account Closed");
+  }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="container mx-auto flex lg:flex-row flex-col px-10 my-10">
@@ -78,7 +97,7 @@ const Profile = () => {
             hover:bg-primary hover:text-white transition-all ${
               tabs === 4 && "bg-primary text-white"
             }`}
-            onClick={() => setTabs(4)}
+            onClick={closeAdminAccount}
           >
             <MdExitToApp />
             <button>Exit</button>
@@ -88,8 +107,24 @@ const Profile = () => {
       {tabs === 0 && <Prodacts />}
       {tabs === 1 && <Order />}
       {tabs === 2 && <Category />}
+      {tabs === 3 && <Footer />}
     </div>
   );
+};
+
+export const getServerSideProps = (ctx) => {
+  const myCookie = ctx.req?.cookies || "";
+  if (myCookie.token !== process.env.ADMIN_TOKEN) {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
 };
 
 export default Profile;
