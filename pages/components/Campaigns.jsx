@@ -16,6 +16,7 @@ const CampaingItem = () => {
           layout="fill"
           className="hover:scale-105 transition-all"
           objectFit="cover"
+          
         />
 
       </div>
